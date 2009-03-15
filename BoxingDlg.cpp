@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Algemeen.h"
+#include "Resource.h"
 #include "BoxingDlg.h"
 
 

@@ -93,7 +93,7 @@ namespace Builder
 		Text(std::string P_sText, std::string P_sId=""):m_sText(P_sText),m_sId(P_sId){}
 		virtual void AddTo(CWndBuilder& P_Builder)
 		{
-			P_Builder.AddMovable(new CMovStatic(P_Builder.m_EventSyncPtr,m_sId,m_sText));
+			P_Builder.AddMovable(shared_new CMovStatic(P_Builder.m_EventSyncPtr,m_sId,m_sText));
 		}
 		std::string m_sText;
 		std::string m_sId;
@@ -112,7 +112,7 @@ public:
 	virtual ~CBoxingDlg();
 
 // Dialog Data
-	enum { IDD = IDD_DIALOG_BOXING };
+	enum { IDD = IDD_JBOXING_DIALOG };
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

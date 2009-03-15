@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "JBoxing.h"
+#include <boost/foreach.hpp>
 
 
 namespace JBoxing
@@ -26,6 +27,13 @@ void CMovable::Move(CRect& P_Rect_Location)
 void CMovable::GetLocation(CRect& P_Rect_Location)
 {
 	P_Rect_Location=m_Rect_Location;
+}
+
+
+CBox::TWeakPtr CMovableInBox::GetBox()
+{
+
+	return m_BoxPtr;
 }
 
 
@@ -80,12 +88,13 @@ void CControl::Move(CRect& P_Rect_Location)
 
 void CBox::SetBoxMovable(IMovable::TRefPtr P_MovablePtr, bool P_bSet)
 {
-	P_MovablePtr->SetBox(P_bSet?this:NULL);
+	P_MovablePtr->SetBox(P_bSet?shared_from_this():CBoxWeakPtr());
 }
 
 bool CBox::AddMovable(IMovable::TRefPtr P_MovablePtr)
 {
-	if(P_MovablePtr->GetBox()!=NULL)
+//	if(CBox::TRefPtr(P_MovablePtr->GetBox()))
+	if(!P_MovablePtr->GetBox().expired())
 		return false;//Already added somewhere
 	SetBoxMovable(P_MovablePtr,true);
 	return true;
@@ -405,10 +414,11 @@ void COverlapBox::GetMaxSize(CSize& P_Size_Max)
 	else
 		P_Size_Max=CSize(0,0);
 	//Zoek de grootste van de grootste
-	J_FOREACH(CvMovable,m_vMovable)
+//	J_FOREACH(CvMovable,m_vMovable)
+	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
 	{
 		CSize W_Size_Cur;
-		(*J_FE_ELEM)->GetMaxSize(W_Size_Cur);
+		W_MovablePtr->GetMaxSize(W_Size_Cur);
 		if(!m_bHToSmallest)
 		{
 			if(P_Size_Max.cx==0||W_Size_Cur.cx==0)	P_Size_Max.cx=0;
@@ -427,10 +437,10 @@ void COverlapBox::GetMinSize(CSize& P_Size_Min)
 {
 	P_Size_Min=CSize(0,0);
 	//Zoek de grootste van de kleinste
-	J_FOREACH(CvMovable,m_vMovable)
+	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
 	{
 		CSize W_Size_Cur;
-		(*J_FE_ELEM)->GetMinSize(W_Size_Cur);
+		W_MovablePtr->GetMinSize(W_Size_Cur);
 		if(P_Size_Min.cx<W_Size_Cur.cx)		P_Size_Min.cx=W_Size_Cur.cx;
 		if(P_Size_Min.cy<W_Size_Cur.cy)		P_Size_Min.cy=W_Size_Cur.cy;
 	}
@@ -438,11 +448,11 @@ void COverlapBox::GetMinSize(CSize& P_Size_Min)
 
 void COverlapBox::Move(CRect& P_Rect_Location)
 {
-	J_FOREACH(CvMovable,m_vMovable)
+	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
 	{
 		//Todo: Zo aanpassen dat de size van de rect binnen de minimale en maximale size blijft.
 		//Workaround: Voorlopig simpel op te lossen door objecten binnen een HvBox te zetten.
-		(*J_FE_ELEM)->Move(P_Rect_Location);
+		W_MovablePtr->Move(P_Rect_Location);
 	}
 }
 

@@ -1,15 +1,21 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <vector>
+#include "JStd.h"
 
 namespace JBoxing
 {
+
+using namespace JStd;
 
 class CBox;
 
 class IMovable : public CJRefCountObjTempl<IMovable>
 {
 public:
+	typedef boost::weak_ptr<CBox> CBoxWeakPtr;
 	virtual ~IMovable(){}
 	virtual	void			Move(CRect& P_Rect_Location)=0;
 	virtual void			GetLocation(CRect& P_Rect_Location)=0;
@@ -19,9 +25,9 @@ public:
 	virtual void			GetMinSize(CSize& P_Size_Min){P_Size_Min=CSize(0,0);}
 
 
-	virtual CBox*			GetBox()=0;
+	virtual CBoxWeakPtr			GetBox()=0;
 protected:
-	virtual void			SetBox(CBox* P_BoxPtr)=0;
+	virtual void			SetBox(CBoxWeakPtr P_BoxPtr)=0;
 
 	friend CBox;
 };
@@ -30,16 +36,17 @@ protected:
 class CMovableInBox : public CJRefCountDerivedTempl<CMovableInBox,IMovable>
 {
 public:
-	CMovableInBox():m_BoxPtr(NULL){}
+	CMovableInBox(){}//:m_BoxPtr(NULL){}
 	virtual ~CMovableInBox();
 
-	CBox*					Parent(){return GetBox();}
+	CBoxWeakPtr			Parent(){return GetBox();}
 
 protected:
-	virtual void			SetBox(CBox* P_BoxPtr){m_BoxPtr=P_BoxPtr;}
-	virtual CBox*			GetBox(){return m_BoxPtr;}
+	virtual void			SetBox(CBoxWeakPtr P_BoxPtr){m_BoxPtr=P_BoxPtr;}
 
-	CBox* m_BoxPtr;
+	virtual CBoxWeakPtr		GetBox();
+
+	CBoxWeakPtr				m_BoxPtr;
 };
 
 
@@ -132,7 +139,8 @@ enum eBoxVAlign
 	eBVA_Last
 };
 
-class CBox : public CJRefCountDerivedTempl<CBox,CMovable>
+
+class CBox : public CJRefCountDerivedTempl<CBox,CMovable>, public boost::enable_shared_from_this<CBox>
 {
 public:
 	virtual bool	AddMovable(IMovable::TRefPtr P_MovablePtr);
@@ -279,7 +287,7 @@ namespace Builder
 				ASSERT(FALSE);
 				return *this;
 			}
-			m_CurBoxPtr=m_CurBoxPtr->Parent();
+			m_CurBoxPtr=CBox::TRefPtr(m_CurBoxPtr->Parent());
 			return *this;
 		}
 
@@ -305,7 +313,7 @@ namespace Builder
 
 		virtual void AddTo(CBuilder& P_Builder)
 		{
-			CHvBox::TRefPtr W_BoxPtr=new CHvBox;
+			CHvBox::TRefPtr W_BoxPtr(new CHvBox);
 			W_BoxPtr->SetHasMaximum(m_bHasMaximum);
 			W_BoxPtr->SetOrientation(m_eOrientation, m_eHAlign, m_eVAlign);
 			P_Builder.AddBox(W_BoxPtr);
@@ -349,7 +357,7 @@ namespace Builder
 
 		virtual void AddTo(CBuilder& P_Builder)
 		{
-			P_Builder.AddBox(new COverlapBox(m_bHToSmallest,m_bVToSmallest));
+			P_Builder.AddBox(shared_new COverlapBox(m_bHToSmallest,m_bVToSmallest));
 		}
 
 	};
@@ -360,7 +368,7 @@ namespace Builder
 		Window(CWnd* P_WndPtr, bool P_bFixedHSize=true, bool P_bFixedVSize=true):m_WndPtr(P_WndPtr),m_bFixedHSize(P_bFixedHSize), m_bFixedVSize(P_bFixedVSize){}
 		virtual void AddTo(CBuilder& P_Builder)
 		{
-			P_Builder.AddMovable(new CMovableWin(m_WndPtr,m_bFixedHSize,m_bFixedVSize));
+			P_Builder.AddMovable(shared_new CMovableWin(m_WndPtr,m_bFixedHSize,m_bFixedVSize));
 		}
 
 		CWnd*	m_WndPtr;
@@ -383,7 +391,7 @@ namespace Builder
 		
 		virtual void AddTo(CBuilder& P_Builder)
 		{
-			P_Builder.AddMovable(new CSpacer(m_iH,m_iW));
+			P_Builder.AddMovable(CMovableInBox::TRefPtr(new CSpacer(m_iH,m_iW)));
 		}
 
 		int m_iH;
@@ -398,7 +406,7 @@ namespace Builder
 		
 		virtual void AddTo(CBuilder& P_Builder)
 		{
-			P_Builder.AddMovable(new CControl(m_iH,m_iW,m_iId));
+			P_Builder.AddMovable(shared_new CControl(m_iH,m_iW,m_iId));
 		}
 
 		int m_iId;
