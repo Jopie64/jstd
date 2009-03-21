@@ -50,4 +50,6 @@ public:
 #define shared_new JStd::CSharedNewHelper() << new
 
 
+std::string MS(const char* P_FormatPtr, ...);
+
 };
