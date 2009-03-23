@@ -3,6 +3,16 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
+#ifndef J_CREATING_LIB
+
+#ifdef _DEBUG
+#pragma comment(lib,"D_JStd.lib")
+#else //ifdef _DEBUG
+#pragma comment(lib,"JStd.lib")
+#endif //ifdef _DEBUG
+
+#endif //ifndef J_CREATING_LIB
+
 namespace JStd
 {
 
