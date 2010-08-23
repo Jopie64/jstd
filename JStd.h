@@ -59,7 +59,12 @@ public:
 
 #define shared_new JStd::CSharedNewHelper() << new
 
+namespace String
+{
 
-std::string MS(const char* P_FormatPtr, ...);
+	
+std::string Format(const char* P_FormatPtr, ...);
+
+} //namespace
 
 };

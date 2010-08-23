@@ -6,7 +6,10 @@
 namespace JStd
 {
 
-std::string MS(const char* P_FormatPtr, ...)
+namespace String
+{
+
+std::string Format(const char* P_FormatPtr, ...)
 {
 	va_list W_va;
 	va_start(W_va,P_FormatPtr);
@@ -18,4 +21,9 @@ std::string MS(const char* P_FormatPtr, ...)
 }
 
 
-};
+
+
+} //String
+
+
+}
