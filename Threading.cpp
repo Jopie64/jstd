@@ -148,6 +148,7 @@ CMsgThread::~CMsgThread()
 
 void CMsgThread::Register(DWORD IdThread)
 {
+	m_bQuit = false;
 	if(IdThread == 0)
 		IdThread = GetCurrentThreadId();
 	m_IdThread = IdThread;
