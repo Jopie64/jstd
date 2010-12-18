@@ -64,6 +64,7 @@ namespace String
 
 	
 std::string Format(const char* P_FormatPtr, ...);
+std::wstring Format(const wchar_t* P_FormatPtr, ...);
 
 } //namespace
 
