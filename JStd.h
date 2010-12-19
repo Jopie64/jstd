@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
+#include <string>
 
 #ifndef J_CREATING_LIB
 
@@ -20,8 +20,8 @@ template <class TP_Obj>
 class CJRefCountObjTempl
 {
 public:
-	typedef boost::shared_ptr<TP_Obj> TRefPtr;
-	typedef boost::weak_ptr<TP_Obj> TWeakPtr;
+	typedef std::tr1::shared_ptr<TP_Obj> TRefPtr;
+	typedef std::tr1::weak_ptr<TP_Obj> TWeakPtr;
 
 };
 
@@ -43,17 +43,17 @@ public:
 	template<class TP_1,class TP_2, class TP_3, class TP_4, class TP_5, class TP_6>
 	CJRefCountDerivedTempl(TP_1& P_1, TP_2& P_2, TP_3& P_3, TP_4& P_4, TP_5& P_5, TP_6& P_6):TP_Obj_Base(P_1,P_2,P_3,P_4,P_5,P_6){}
 
-	typedef boost::shared_ptr<TP_Obj> TRefPtr;
-	typedef boost::weak_ptr<TP_Obj> TWeakPtr;
+	typedef std::tr1::shared_ptr<TP_Obj> TRefPtr;
+	typedef std::tr1::weak_ptr<TP_Obj> TWeakPtr;
 };
 
 class CSharedNewHelper
 {
 public:
 	template<class TP_Obj>
-	boost::shared_ptr<TP_Obj> operator<<(TP_Obj* P_ObjPtr)
+	std::tr1::shared_ptr<TP_Obj> operator<<(TP_Obj* P_ObjPtr)
 	{
-		return boost::shared_ptr<TP_Obj>(P_ObjPtr);
+		return std::tr1::shared_ptr<TP_Obj>(P_ObjPtr);
 	}
 };
 
