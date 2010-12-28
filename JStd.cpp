@@ -59,6 +59,37 @@ std::wstring ToWide(const std::string& str, unsigned codePage)
    return wideStr;
 }
 
+void TrimRight(std::string& str, const char* charsToTrim)
+{
+	std::string::size_type place = str.find_last_not_of(charsToTrim);
+	if(place == std::string::npos)
+	{
+		str.clear();
+		return;
+	}
+	str.resize(place + 1);
+}
+
+void TrimLeft(std::string& str, const char* charsToTrim)
+{
+	std::string::size_type place = str.find_first_not_of(charsToTrim);
+	if(place == std::string::npos)
+	{
+		str.clear();
+		return;
+	}
+	if(place == 0)
+		return;
+	str = str.substr(place);
+}
+
+void Trim(std::string& str, const char* charsToTrim)
+{
+	TrimRight(str, charsToTrim);
+	TrimLeft(str, charsToTrim);
+}
+
+
 
 
 } //String

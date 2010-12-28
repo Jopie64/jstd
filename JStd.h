@@ -69,6 +69,10 @@ std::wstring Format(const wchar_t* P_FormatPtr, ...);
 std::string ToMult(const std::wstring& str, unsigned codePage);
 std::wstring ToWide(const std::string& str, unsigned codePage);
 
+void		TrimRight(std::string& str, const char* charsToTrim);
+void		TrimLeft(std::string& str, const char* charsToTrim);
+void		Trim(std::string& str, const char* charsToTrim);
+
 } //namespace
 
 };
