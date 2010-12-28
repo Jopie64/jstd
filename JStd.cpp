@@ -2,6 +2,7 @@
 #include "JStd.h"
 #include <cstdarg>
 #include <cstdio>
+#include <windows.h>
 
 
 namespace JStd
@@ -30,6 +31,32 @@ std::wstring Format(const wchar_t* P_FormatPtr, ...)
 	W_sReturn.resize(W_iSize);
 	_vsnwprintf(&*W_sReturn.begin(),W_iSize,P_FormatPtr,W_va);
 	return W_sReturn;
+}
+
+
+
+std::string ToMult(const std::wstring& str, unsigned codePage)
+{
+   std::string multStr;
+   int length = WideCharToMultiByte(codePage, 0, str.c_str(), -1, NULL, 0, NULL, NULL);
+   if (length>1)
+   { 
+      multStr.resize(length-1);
+      WideCharToMultiByte(codePage, 0, str.c_str(), -1, &*multStr.begin(), length, NULL, NULL);
+   }
+   return multStr;
+}
+
+std::wstring ToWide(const std::string& str, unsigned codePage)
+{
+   std::wstring wideStr;
+   int length = MultiByteToWideChar(codePage, 0, str.c_str(), -1, NULL, 0);
+   if (length>1)
+   { 
+      wideStr.resize(length-1);
+      MultiByteToWideChar(codePage, 0, str.c_str(), -1, &*wideStr.begin(), length);
+   }
+   return wideStr;
 }
 
 
