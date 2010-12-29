@@ -3,7 +3,9 @@
 #include <cstdarg>
 #include <cstdio>
 #include <windows.h>
+#include <algorithm>
 
+using namespace std;
 
 namespace JStd
 {
@@ -89,6 +91,19 @@ void Trim(std::string& str, const char* charsToTrim)
 	TrimLeft(str, charsToTrim);
 }
 
+void Remove(std::string& str, char charRem)
+{
+	string tempStr = str;
+	str.clear();
+	for(size_t i = 0; i < tempStr.size(); ++i)
+		if(tempStr[i] != charRem)
+			str += tempStr[i];
+}
+
+void ToUpper(std::string& str)
+{
+	transform(str.begin(), str.end(), str.begin(), toupper);
+}
 
 
 

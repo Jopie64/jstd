@@ -72,6 +72,8 @@ std::wstring ToWide(const std::string& str, unsigned codePage);
 void		TrimRight(std::string& str, const char* charsToTrim);
 void		TrimLeft(std::string& str, const char* charsToTrim);
 void		Trim(std::string& str, const char* charsToTrim);
+void		Remove(std::string& str, char charRem);
+void		ToUpper(std::string& str);
 
 } //namespace
 
