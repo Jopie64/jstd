@@ -17,6 +17,22 @@ CSha1Hash::CSha1Hash()
 	memset(&m_digest, 0, sizeof(m_digest));
 }
 
+int CSha1Hash::Compare(const CSha1Hash& that)const
+{
+	return memcmp(m_digest, that.m_digest, sizeof(m_digest));
+}
+
+bool CSha1Hash::operator<(const CSha1Hash& that)const
+{
+	return Compare(that) < 0;
+}
+
+bool CSha1Hash::operator==(const CSha1Hash& that)const
+{
+	return Compare(that) == 0;
+}
+
+
 std::string CSha1Hash::AsString(eMethod method)
 {
 	string result;

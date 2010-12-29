@@ -26,6 +26,11 @@ public:
 
 	std::string AsString(eMethod method = REPORT_HEX_NOSPACE);
 
+	int			Compare(const CSha1Hash& that)const;
+
+	bool		operator<(const CSha1Hash& that)const;
+	bool		operator==(const CSha1Hash& that)const;
+
 private:
 	unsigned char m_digest[20];
 
