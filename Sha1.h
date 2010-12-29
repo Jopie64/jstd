@@ -30,6 +30,7 @@ public:
 
 	bool		operator<(const CSha1Hash& that)const;
 	bool		operator==(const CSha1Hash& that)const;
+	bool		operator!=(const CSha1Hash& that)const;
 
 private:
 	unsigned char m_digest[20];

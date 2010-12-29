@@ -32,6 +32,12 @@ bool CSha1Hash::operator==(const CSha1Hash& that)const
 	return Compare(that) == 0;
 }
 
+bool CSha1Hash::operator!=(const CSha1Hash& that)const
+{
+	return Compare(that) != 0;
+}
+
+
 
 std::string CSha1Hash::AsString(eMethod method)
 {
