@@ -50,13 +50,13 @@ std::string CSha1Hash::AsString(eMethod method)
 	case REPORT_HEX:
 		{
 			result.reserve(60);
-			sprintf(szTemp, "%02x", m_digest[0]);
+			sprintf_s(szTemp, "%02x", m_digest[0]);
 
 			result += szTemp;
 
 			for(i = 1; i < 20; i++)
 			{
-				sprintf(szTemp, " %02x", m_digest[i]);
+				sprintf_s(szTemp, " %02x", m_digest[i]);
 				result += szTemp;
 			}
 		}
@@ -65,12 +65,12 @@ std::string CSha1Hash::AsString(eMethod method)
 	case REPORT_DIGIT:
 		{
 			result.reserve(80);
-			sprintf(szTemp, "%u", m_digest[0]);
+			sprintf_s(szTemp, "%u", m_digest[0]);
 			result += szTemp;
 
 			for(i = 1; i < 20; i++)
 			{
-				sprintf(szTemp, " %u", m_digest[i]);
+				sprintf_s(szTemp, " %u", m_digest[i]);
 				result += szTemp;
 			}
 		}
@@ -80,7 +80,7 @@ std::string CSha1Hash::AsString(eMethod method)
 		{
 			result.resize(40);
 			for(int i = 0; i < 20; ++i)
-				sprintf(&*(result.begin() + (i * 2)), "%02x", m_digest[i]);
+				sprintf_s(&*(result.begin() + (i * 2)), result.size() - i*2, "%02x", m_digest[i]);
 		}
 		break;
 
@@ -93,7 +93,7 @@ std::string CSha1Hash::AsString(eMethod method)
 				if(i != 0 && (i % 4) == 0)
 					result[place++] = '-';
 
-				sprintf(&*(result.begin() + place), "%02x", m_digest[i]);
+				sprintf_s(&*(result.begin() + place), result.size() - place, "%02x", m_digest[i]);
 				place += 2;
 			}
 		}
