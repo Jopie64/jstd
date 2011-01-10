@@ -2,7 +2,8 @@
 
 #include <vector>
 #include "JStd.h"
-#include <boost/enable_shared_from_this.hpp>
+//#include <boost/enable_shared_from_this.hpp>
+#include <memory>
 
 namespace JBoxing
 {
@@ -14,7 +15,7 @@ class CBox;
 class IMovable : public CJRefCountObjTempl<IMovable>
 {
 public:
-	typedef boost::weak_ptr<CBox> CBoxWeakPtr;
+	typedef std::tr1::weak_ptr<CBox> CBoxWeakPtr;
 	virtual ~IMovable(){}
 	virtual	void			Move(CRect& P_Rect_Location)=0;
 	virtual void			GetLocation(CRect& P_Rect_Location)=0;
@@ -139,7 +140,7 @@ enum eBoxVAlign
 };
 
 
-class CBox : public CJRefCountDerivedTempl<CBox,CMovable>, public boost::enable_shared_from_this<CBox>
+class CBox : public CJRefCountDerivedTempl<CBox,CMovable>, public std::tr1::enable_shared_from_this<CBox>
 {
 public:
 	virtual bool	AddMovable(IMovable::TRefPtr P_MovablePtr);

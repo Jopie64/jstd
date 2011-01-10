@@ -1,7 +1,5 @@
 #include "StdAfx.h"
 #include "JBoxing.h"
-#include <boost/foreach.hpp>
-
 
 namespace JBoxing
 {
@@ -107,8 +105,8 @@ void CBox::DelMovable(IMovable::TRefPtr P_MovablePtr)
 
 void CBoxWithMovables::Clear()
 {
-	for(CvMovable::iterator W_itMovable=m_vMovable.begin();W_itMovable!=m_vMovable.end();++W_itMovable)
-		SetBoxMovable(*W_itMovable,false);
+	for(CvMovable::iterator i = m_vMovable.begin(); i != m_vMovable.end(); ++i)
+		SetBoxMovable(*i,false);
 
 	m_vMovable.clear();
 }
@@ -127,10 +125,10 @@ bool CBoxWithMovables::AddMovable(IMovable::TRefPtr P_MovablePtr)
 void CBoxWithMovables::DelMovable(IMovable::TRefPtr P_MovablePtr)
 {
 	CBox::DelMovable(P_MovablePtr);
-	for(CvMovable::iterator W_itMovable=m_vMovable.begin();W_itMovable!=m_vMovable.end();++W_itMovable)
-		if(*W_itMovable==P_MovablePtr)
+	for(CvMovable::iterator i = m_vMovable.begin(); i != m_vMovable.end(); ++i)
+		if(*i==P_MovablePtr)
 		{
-			m_vMovable.erase(W_itMovable);
+			m_vMovable.erase(i);
 			return;
 		}
 }
@@ -212,7 +210,7 @@ void CHvBox::GetMaxSize(CSize& P_Size_Max)
 	bool W_b_cx_Undetermined=false;
 	bool W_b_cy_Undetermined=false;
 
-	for(int i=0;i<m_vMovable.size();++i)
+	for(size_t i=0;i<m_vMovable.size();++i)
 	{
 		CSize W_Size_MaxMovable;
 		m_vMovable[i]->GetMaxSize(W_Size_MaxMovable);
@@ -235,7 +233,7 @@ void CHvBox::GetMaxSize(CSize& P_Size_Max)
 void CHvBox::GetMinSize(CSize& P_Size_Min)
 {
 	P_Size_Min=CSize(0,0);
-	for(int i=0;i<m_vMovable.size();++i)
+	for(size_t i=0;i<m_vMovable.size();++i)
 	{
 		CSize W_Size_MinMovable;
 		m_vMovable[i]->GetMinSize(W_Size_MinMovable);
@@ -415,10 +413,11 @@ void COverlapBox::GetMaxSize(CSize& P_Size_Max)
 		P_Size_Max=CSize(0,0);
 	//Zoek de grootste van de grootste
 //	J_FOREACH(CvMovable,m_vMovable)
-	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
+//	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
+	for(CvMovable::iterator i = m_vMovable.begin(); i != m_vMovable.end(); ++i)
 	{
 		CSize W_Size_Cur;
-		W_MovablePtr->GetMaxSize(W_Size_Cur);
+		(*i)->GetMaxSize(W_Size_Cur);
 		if(!m_bHToSmallest)
 		{
 			if(P_Size_Max.cx==0||W_Size_Cur.cx==0)	P_Size_Max.cx=0;
@@ -437,10 +436,10 @@ void COverlapBox::GetMinSize(CSize& P_Size_Min)
 {
 	P_Size_Min=CSize(0,0);
 	//Zoek de grootste van de kleinste
-	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
+	for(CvMovable::iterator i = m_vMovable.begin(); i != m_vMovable.end(); ++i)
 	{
 		CSize W_Size_Cur;
-		W_MovablePtr->GetMinSize(W_Size_Cur);
+		(*i)->GetMinSize(W_Size_Cur);
 		if(P_Size_Min.cx<W_Size_Cur.cx)		P_Size_Min.cx=W_Size_Cur.cx;
 		if(P_Size_Min.cy<W_Size_Cur.cy)		P_Size_Min.cy=W_Size_Cur.cy;
 	}
@@ -448,11 +447,11 @@ void COverlapBox::GetMinSize(CSize& P_Size_Min)
 
 void COverlapBox::Move(CRect& P_Rect_Location)
 {
-	BOOST_FOREACH(IMovable::TRefPtr& W_MovablePtr, m_vMovable)
+	for(CvMovable::iterator i = m_vMovable.begin(); i != m_vMovable.end(); ++i)
 	{
 		//Todo: Zo aanpassen dat de size van de rect binnen de minimale en maximale size blijft.
 		//Workaround: Voorlopig simpel op te lossen door objecten binnen een HvBox te zetten.
-		W_MovablePtr->Move(P_Rect_Location);
+		(*i)->Move(P_Rect_Location);
 	}
 }
 
