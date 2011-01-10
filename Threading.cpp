@@ -1,9 +1,10 @@
 #include "StdAfx.h"
 #include "Threading.h"
-//#include <boost/bind.hpp>
+#include <functional>
 
 namespace Threading
 {
+using namespace std;
 
 CHandle::CHandle(HANDLE handle)
 :	m_Handle(handle)
@@ -184,7 +185,7 @@ bool CMsgThread::CallMessages()
 void CMsgThread::PostQuitMessage(int exitCode)
 {
 //	PostCallback(std::bind1st(std::bind1st(std::mem_fun_ref(&CMsgThread::SetQuitInfo),this),exitCode));
-	PostCallback(simplebind(&CMsgThread::SetQuitInfo, this, exitCode));
+	PostCallback(tr1::bind(&CMsgThread::SetQuitInfo, this, exitCode));
 }
 
 void CMsgThread::SetQuitInfo(int threadExitCode)
@@ -212,8 +213,8 @@ int test2(int i, int j)
 int test()
 {
 	a h;
-//	return simplebind(&a::b,&h,3)();
-	return simplebind(&test2, 5, 7)();
+//	return tr1::bind(&a::b,&h,3)();
+	return tr1::bind(&test2, 5, 7)();
 }
 
 int G_i = test();

@@ -1,7 +1,6 @@
 #pragma once
 #include <queue>
 #include <map>
-#include "simplebind.h"
 
 namespace Threading
 {
