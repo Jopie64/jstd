@@ -152,11 +152,19 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\DirIterator.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\JBoxing.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\JStd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Sha1.cpp"
 				>
 			</File>
 			<File
@@ -179,12 +187,20 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\Threading.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\DirIterator.h"
+				>
+			</File>
 			<File
 				RelativePath="..\JBoxing.h"
 				>
@@ -194,7 +210,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\Sha1.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\Threading.h"
 				>
 			</File>
 		</Filter>
