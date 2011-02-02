@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Threading.h"
 #include <functional>
+#include <process.h>
 
 namespace Threading
 {
@@ -61,7 +62,7 @@ void CCritSect::Unlock()
 	LeaveCriticalSection(&m_CritSect);
 }
 
-UINT ExecAsync_Entry(LPVOID pVoid)
+UINT __stdcall ExecAsync_Entry(LPVOID pVoid)
 {
 	CRunnableBase* pTd = (CRunnableBase*)pVoid;
 	UINT Result = pTd->Run();
@@ -71,10 +72,13 @@ UINT ExecAsync_Entry(LPVOID pVoid)
 
 DWORD ExecAsync_Td(CRunnableBase* pTd)
 {
-	CWinThread* pWinTd = AfxBeginThread(ExecAsync_Entry, pTd);
-	if(pWinTd == NULL)
-		return 0;
-	return pWinTd->m_nThreadID;
+//	CWinThread* pWinTd = AfxBeginThread(ExecAsync_Entry, pTd);
+//	if(pWinTd == NULL)
+//		return 0;
+//	return pWinTd->m_nThreadID;
+	unsigned int tdId = 0;
+	CloseHandle((HANDLE)_beginthreadex(NULL, 0, &ExecAsync_Entry, pTd, 0, &tdId));
+	return tdId;
 }
 
 
@@ -244,7 +248,9 @@ LRESULT CWinMlHook::StaticCallback(int code, WPARAM wParam, LPARAM lParam)
 	CWinMlHook* pThis = dynamic_cast<CWinMlHook*>(CThreads::I()->Get());
 	if(pThis == NULL)
 	{
+#ifdef ASSERT
 		ASSERT(FALSE);
+#endif 
 		return CallNextHookEx(NULL, code, wParam, lParam);;
 	}
 	return pThis->Callback(code, wParam, lParam);

@@ -1,6 +1,7 @@
 #pragma once
 #include <queue>
 #include <map>
+#include <Windows.h>
 
 namespace Threading
 {
@@ -9,7 +10,12 @@ template <class T_Derived>
 class CSingleton
 {
 public:
-	CSingleton(){ASSERT(m_pInterface == NULL);}
+	CSingleton()
+	{
+#ifdef ASSERT
+		ASSERT(m_pInterface == NULL);
+#endif
+	}
 
 	static T_Derived* I()
 	{
