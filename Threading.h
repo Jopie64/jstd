@@ -3,40 +3,10 @@
 #include <map>
 #include <Windows.h>
 
-namespace Threading
-{
+#include "JStd.h"
 
-template <class T_Derived>
-class CSingleton
-{
-public:
-	CSingleton()
-	{
-#ifdef ASSERT
-		ASSERT(m_pInterface == NULL);
-#endif
-	}
-
-	static T_Derived* I()
-	{
-		if(m_pInterface == NULL)
-			m_pInterface = new T_Derived;
-		return m_pInterface;
-	}
-
-	static void Singleton_Destroy()
-	{
-		delete m_pInterface;
-		m_pInterface = NULL;
-	}
-
-private:
-
-	static T_Derived* m_pInterface;
-};
-
-template <class T_Derived>
-T_Derived* CSingleton<T_Derived>::m_pInterface = NULL;
+namespace JStd {
+namespace Threading {
 
 class CHandle
 {
@@ -250,4 +220,5 @@ private:
 
 };
 
-}
+}//Threading
+}//JStd

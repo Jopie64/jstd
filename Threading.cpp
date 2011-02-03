@@ -3,8 +3,9 @@
 #include <functional>
 #include <process.h>
 
-namespace Threading
-{
+namespace JStd {
+namespace Threading {
+
 using namespace std;
 
 CHandle::CHandle(HANDLE handle)
@@ -157,14 +158,14 @@ void CMsgThread::Register(DWORD IdThread)
 	if(IdThread == 0)
 		IdThread = GetCurrentThreadId();
 	m_IdThread = IdThread;
-	CThreads::I()->RegisterThread(this, IdThread);
+	CThreads::I().RegisterThread(this, IdThread);
 }
 
 void CMsgThread::Unregister()
 {
 	if(m_IdThread == 0)
 		return;
-	CThreads::I()->UnregisterThread(m_IdThread);
+	CThreads::I().UnregisterThread(m_IdThread);
 	m_IdThread = 0;
 }
 
@@ -245,7 +246,7 @@ LRESULT CWinMlHook::Callback(int code, WPARAM wParam, LPARAM lParam)
 
 LRESULT CWinMlHook::StaticCallback(int code, WPARAM wParam, LPARAM lParam)
 {
-	CWinMlHook* pThis = dynamic_cast<CWinMlHook*>(CThreads::I()->Get());
+	CWinMlHook* pThis = dynamic_cast<CWinMlHook*>(CThreads::I().Get());
 	if(pThis == NULL)
 	{
 #ifdef ASSERT
@@ -317,4 +318,5 @@ void CThreads::UnregisterThread(DWORD IdThread)
 }
 
 
-}
+}//Threading
+}//JStd
