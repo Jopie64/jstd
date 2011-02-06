@@ -20,7 +20,7 @@ std::string Format(const char* P_FormatPtr, ...)
 	size_t W_iSize = _vscprintf(P_FormatPtr,W_va);
 	std::string W_sReturn;
 	W_sReturn.resize(W_iSize);
-	_vsnprintf_s(&*W_sReturn.begin(),W_iSize,W_iSize,P_FormatPtr,W_va);
+	_vsnprintf_s(&*W_sReturn.begin(), W_iSize+1, W_iSize, P_FormatPtr, W_va);
 	return W_sReturn;
 }
 
