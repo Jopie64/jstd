@@ -38,10 +38,21 @@ HANDLE CHandle::Detach()
 	return returnHandle;
 }
 
-CEvent::CEvent()
+CEvent::CEvent(bool P_bManualReset)
 {
-	CreateEvent(NULL, FALSE, FALSE, NULL);
+	CreateEvent(NULL, P_bManualReset ? TRUE : FALSE, FALSE, NULL);
 }
+
+void CEvent::Set()
+{
+	SetEvent(H());
+}
+
+void CEvent::Reset()
+{
+	ResetEvent(H());
+}
+
 
 CCritSect::CCritSect()
 {

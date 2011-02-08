@@ -27,7 +27,10 @@ private:
 class CEvent : public CHandle
 {
 public:
-	CEvent();
+	CEvent(bool P_bManualReset = false);
+
+	void Set();
+	void Reset();
 
 };
 
