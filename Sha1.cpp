@@ -80,7 +80,7 @@ std::string CSha1Hash::AsString(eMethod method)
 		{
 			result.resize(40);
 			for(int i = 0; i < 20; ++i)
-				sprintf_s(&*(result.begin() + (i * 2)), result.size() - i*2, "%02x", m_digest[i]);
+				sprintf_s(&*(result.begin() + (i * 2)), result.size() - i*2 + 1, "%02x", m_digest[i]);
 		}
 		break;
 
@@ -93,7 +93,7 @@ std::string CSha1Hash::AsString(eMethod method)
 				if(i != 0 && (i % 4) == 0)
 					result[place++] = '-';
 
-				sprintf_s(&*(result.begin() + place), result.size() - place, "%02x", m_digest[i]);
+				sprintf_s(&*(result.begin() + place), result.size() - place + 1, "%02x", m_digest[i]);
 				place += 2;
 			}
 		}
