@@ -94,6 +94,33 @@ void		yield(); //No capital y, because winbase.h defines Yield() as a macro, pff
 template<class TP_Cb>
 static CCoro* Create(const TP_Cb& P_Cb) { return CCoro::Create(P_Cb); }
 
+template<class TP_Return>
+class CFuture
+{
+public:
+	CFuture():m_CoroPtr(CCoro::Cur()){}
+	TP_Return& operator*(){ m_Val.Get(); }
+
+	void Signal(const TP_Return& P_Return){ m_Val(P_Return); m_CoroPtr->yield(); }
+
+
+	class CCb
+	{
+	public:
+		CCb(CFuture* P_ThisPtr):m_ThisPtr(P_ThisPtr){}
+
+		CFuture* m_ThisPtr;
+
+		void operator()(const TP_Return& P_Ret){ m_ThisPtr->Signal(P_Ret); }
+	};
+
+	CCb MakeCallback(){return CCb(this);}
+
+private:
+	COptional<TP_Return>	m_Val;
+	CCoro*					m_CoroPtr;
+};
+
 
 class CCoroutineBase
 {
