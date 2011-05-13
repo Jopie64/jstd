@@ -3,6 +3,7 @@
 #include <memory>
 #include <functional>
 #include <stdexcept>
+#include "JStd.h"
 
 namespace JStd {
 namespace Coro {
@@ -139,13 +140,11 @@ public:
 
 		TP_In yield(const TP_Out& P_Out)
 		{
-			m_ThisPtr->m_Out.first = P_Out;
-			m_ThisPtr->m_Out.second = true;
+			m_ThisPtr->m_Out(P_Out);
 			Coro::yield();
-			if(!m_ThisPtr->m_In.second)
+			if(!m_ThisPtr->m_In)
 				throw std::logic_error("Unexpected yield to this coro.");
-			m_ThisPtr->m_In.second = false; //invalidate
-			return m_ThisPtr->m_In.first;
+			return m_ThisPtr->m_In.GetAndDestroy(); //invalidate
 		}
 
 	private:
@@ -156,7 +155,7 @@ public:
 
 	template<class TP_Cb>
 	CCoroutine(const TP_Cb& P_Cb)
-	: CCoroutineBase(NULL), m_In(TP_In(), false), m_Out(TP_Out(), false)
+	: CCoroutineBase(NULL)
 	{
 		Init(P_Cb);
 	}
@@ -165,12 +164,11 @@ public:
 	TP_Out operator()(const TP_In& P_In)
 	{
 		EnsureValid();
-		m_In.first = P_In;
-		m_In.second = true;
+		m_In(P_In);
 		m_CoroPtr->yield();
-		if(!m_Out.second)
+		if(!m_Out)
 			throw std::logic_error("No return value received.");
-		return m_Out.first;
+		return *m_Out;
 	}
 
 	template<class TP_Cb>
@@ -185,16 +183,15 @@ private:
 	void Start()
 	{
 		//ASSERT(m_In.second);
-		m_In.second = false;
-		m_Func(self(this), m_In.first);
+		m_Func(self(this), m_In.GetAndDestroy());
 	}
 
 
 
 	T_Func	m_Func;
 
-	std::pair<TP_In, bool>	m_In;
-	std::pair<TP_Out, bool>	m_Out;
+	COptional<TP_In>	m_In;
+	COptional<TP_Out>	m_Out;
 };
 
 
@@ -211,8 +208,7 @@ public:
 
 		void yield(const TP_Out& P_Out)
 		{
-			m_ThisPtr->m_Out.first = P_Out;
-			m_ThisPtr->m_Out.second = true;
+			m_ThisPtr->m_Out(P_Out);
 			Coro::yield();
 		}
 
@@ -224,7 +220,7 @@ public:
 
 	template<class TP_Cb>
 	CCoroutine(const TP_Cb& P_Cb)
-	: CCoroutineBase(NULL), m_Out(TP_Out(), false)
+	: CCoroutineBase(NULL)
 	{
 		Init(P_Cb);
 	}
@@ -234,9 +230,9 @@ public:
 	{
 		EnsureValid();
 		m_CoroPtr->yield();
-		if(!m_Out.second)
+		if(!m_Out)
 			throw std::logic_error("No return value received.");
-		return m_Out.first;
+		return m_Out.GetAndDestroy();
 	}
 
 	template<class TP_Cb>
@@ -258,7 +254,7 @@ private:
 
 	T_Func	m_Func;
 
-	std::pair<TP_Out, bool>	m_Out;
+	COptional<TP_Out>	m_Out;
 };
 
 

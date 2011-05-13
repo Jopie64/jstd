@@ -109,6 +109,7 @@ public:
 	~COptional(){ Destroy(); }
 
 	void Destroy(){ if(!IsValid())return; Get().~TP_Val(); }
+	TP_Val GetAndDestroy(){ TP_Val W_Return(Get()); Destroy(); return W_Return; }
 
 	//Constructors
 	TP_Val& operator()(){Destroy(); new (m_Data) TP_Val(); m_bConstructed = true; return Get(); }
