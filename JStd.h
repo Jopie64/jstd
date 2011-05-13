@@ -101,4 +101,45 @@ template <class T_Derived>
 T_Derived* JStd::CSingleton<T_Derived>::m_pInterface = NULL;
 
 
+template<class TP_Val>
+class COptional
+{
+public:
+	COptional():m_bConstructed(false){}
+	~COptional(){ Destroy(); }
+
+	void Destroy(){ if(!IsValid())return; Get().~TP_Val(); }
+
+	//Constructors
+	TP_Val& operator()(){Destroy(); new (m_Data) TP_Val(); m_bConstructed = true; return Get(); }
+	template<class TP_1>
+	TP_Val& operator()(const TP_1& P_1){Destroy(); new (m_Data) TP_Val(P_1); m_bConstructed = true; return Get(); }
+	template<class TP_1, class TP_2>
+	TP_Val& operator()(const TP_1& P_1){Destroy(); new (m_Data) TP_Val(P_1, P_2); m_bConstructed = true; return Get(); }
+	template<class TP_1, class TP_2, class TP_3>
+	TP_Val& operator()(const TP_1& P_1){Destroy(); new (m_Data) TP_Val(P_1, P_2, P_3); m_bConstructed = true; return Get(); }
+
+	//Validators
+	bool IsValid() const {return m_bConstructed;}
+	void CheckValid() const { if(!IsValid()) throw std::logic_error("Not constructed."); }
+	typedef bool (COptional::*T_IsValidFuncPtr)() const;
+	operator T_IsValidFuncPtr () const {return IsValid() ? &COptional::IsValid : NULL;}
+
+	//Getters
+	TP_Val& Get() { CheckValid(); return (TP_Val&)m_Data; }
+	const TP_Val& Get() const { CheckValid(); return (TP_Val&)m_Data; }
+
+	TP_Val& operator*() {return Get();}
+	const TP_Val& operator*() const { return Get(); }
+	TP_Val* operator->() {return &Get();}
+	const TP_Val* operator->() const { return &Get(); }
+
+
+private:
+	void* Data(){return m_Data;}
+	char m_Data[sizeof(TP_Val)];
+	bool m_bConstructed;
+
 };
+
+}
