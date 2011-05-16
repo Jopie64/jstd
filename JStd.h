@@ -112,7 +112,7 @@ public:
 
 	COptional operator=(const COptional& P_That){ Destroy(); if(P_That) (*this)(*P_That); }
 
-	void Destroy(){ if(!IsValid())return; Get().~TP_Val(); }
+	void Destroy(){ if(!IsValid())return; Get().~TP_Val(); m_bConstructed = false; }
 	TP_Val GetAndDestroy(){ TP_Val W_Return(Get()); Destroy(); return W_Return; }
 
 	//Constructors
