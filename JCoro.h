@@ -12,6 +12,18 @@ class CExitException
 {
 };
 
+class CNotInitializedException : public std::logic_error
+{
+public:
+	CNotInitializedException() : std::logic_error("Coroutine was not initialized. Should call operator() with parameter once before the nothrow version.") {}
+};
+
+class CWaitingException : public std::exception
+{
+public:
+	CWaitingException() : std::exception("Coroutine cannot return any value because it is waiting for an event."){}
+};
+
 class CCoro;
 
 class CMainCoro
@@ -99,10 +111,14 @@ class CFuture
 {
 public:
 	CFuture():m_CoroPtr(CCoro::Cur()){}
-	TP_Return& operator*(){ m_Val.Get(); }
+	TP_Return& operator*(){ return *m_Val; }
 
 	void Signal(const TP_Return& P_Return){ m_Val(P_Return); m_CoroPtr->yield(); }
 
+	bool IsResolved()const{return m_Val;}
+
+	typedef bool (CFuture::*T_IsValidFuncPtr)() const;
+	operator T_IsValidFuncPtr () const {return IsResolved() ? &CFuture::IsResolved : NULL; }
 
 	class CCb
 	{
@@ -115,6 +131,8 @@ public:
 	};
 
 	CCb MakeCallback(){return CCb(this);}
+
+	void Invalidate(){ m_Val.Destroy(); }
 
 private:
 	COptional<TP_Return>	m_Val;
@@ -132,19 +150,73 @@ public:
 	}
 
 	bool IsValid() const { return m_CoroPtr != NULL; }
+	bool IsWaiting() const { return m_bWaiting; }
+	bool IsRunnable() const { return IsValid() && !IsWaiting(); }
 	void EnsureValid() const { if(!IsValid()) throw std::logic_error("Used uninitialized coroutine."); }
+	void EnsureRunnable() const { EnsureValid(); if(!IsRunnable()) throw std::logic_error("Coroutine is currently waiting."); }
+
 
 
 	typedef bool (CCoroutineBase::*T_IsValidFuncPtr)() const;
-	operator T_IsValidFuncPtr () const {return IsValid() ? &CCoroutineBase::IsValid : NULL;}
+	operator T_IsValidFuncPtr () const {return IsRunnable() ? &CCoroutineBase::IsRunnable : NULL; }
 
 protected:
 	CCoroutineBase(CCoro* P_CoroPtr)
-	:	m_CoroPtr(P_CoroPtr)
+	:	m_CoroPtr(P_CoroPtr),
+		m_bWaiting(false)
 	{
 	}
 
 	void Init(CCoro* P_CoroPtr) { m_CoroPtr = P_CoroPtr; }
+
+	template<class T>
+	void Wait(CFuture<T>& P_Future)
+	{
+		P_Future.Invalidate();
+		m_bWaiting = true;
+		while(!P_Future)
+			m_CoroPtr->yield();
+		m_bWaiting = false;
+	}
+
+	template<class TP_List>
+	int WaitSome(TP_List& P_Futures)
+	{
+		for(typename TP_List::iterator i = P_Futures.begin(); i != P_Futures.end(); ++i)
+			i->Invalidate();
+		m_bWaiting = true;
+		while(true)
+		{
+			int W_iCount = 0;
+			for(typename TP_List::iterator i = P_Futures.begin(); i != P_Futures.end(); ++i)
+			{
+				if(*i)
+				{
+					m_bWaiting = false;
+					return W_iCount;
+				}
+				++W_iCount;
+			}
+			m_CoroPtr->yield();
+		}
+	}
+
+	template <class TP_Derived>
+	class selfBase
+	{
+	public:
+		template<class T>
+		void Wait(CFuture<T>& P_Future)
+		{
+			((TP_Derived*)this)->GetThisPtr()->Wait(P_Future);
+		}
+
+		template<class TP_List>
+		int WaitSome(TP_List& P_Futures)
+		{
+			return ((TP_Derived*)this)->GetThisPtr()->Wait(P_Futures);
+		};
+	};
 
 private:
 	CCoroutineBase(const CCoroutineBase&);
@@ -152,6 +224,7 @@ private:
 
 protected:
 	CCoro*	m_CoroPtr;
+	bool	m_bWaiting;
 };
 
 
@@ -160,7 +233,7 @@ class CCoroutine : public CCoroutineBase
 {
 public:
 
-	class self
+	class self : public selfBase<self>
 	{
 	public:
 		self(CCoroutine* P_ThisPtr):m_ThisPtr(P_ThisPtr){}
@@ -171,8 +244,12 @@ public:
 			Coro::yield();
 			if(!m_ThisPtr->m_In)
 				throw std::logic_error("Unexpected yield to this coro.");
-			return m_ThisPtr->m_In.GetAndDestroy(); //invalidate
+			return *m_ThisPtr->m_In;
 		}
+
+		CCoroutine* GetThisPtr(){return m_ThisPtr;}
+
+		TP_In result(){return *m_thisPtr->m_In;}
 
 	private:
 		CCoroutine* m_ThisPtr;
@@ -182,7 +259,7 @@ public:
 
 	template<class TP_Cb>
 	CCoroutine(const TP_Cb& P_Cb)
-	: CCoroutineBase(NULL)
+	:	CCoroutineBase(NULL)
 	{
 		Init(P_Cb);
 	}
@@ -193,9 +270,22 @@ public:
 		EnsureValid();
 		m_In(P_In);
 		m_CoroPtr->yield();
+		if(m_bWaiting)
+			throw CWaitingException();
 		if(!m_Out)
 			throw std::logic_error("No return value received.");
 		return *m_Out;
+	}
+
+	void operator()(const TP_In& P_In, std::nothrow_t)
+	{
+		try
+		{
+			(*this)(P_In);
+		}
+		catch(CWaitingException&)
+		{//Ignore this because of nothrow
+		}
 	}
 
 	template<class TP_Cb>
@@ -209,8 +299,7 @@ public:
 private:
 	void Start()
 	{
-		//ASSERT(m_In.second);
-		m_Func(self(this), m_In.GetAndDestroy());
+		m_Func(self(this), *m_In);
 	}
 
 
@@ -219,6 +308,7 @@ private:
 
 	COptional<TP_In>	m_In;
 	COptional<TP_Out>	m_Out;
+	bool				m_bInitialized;
 };
 
 
@@ -228,7 +318,7 @@ class CCoroutine<TP_Out, void> : public CCoroutineBase
 {
 public:
 
-	class self
+	class self : public selfBase<self>
 	{
 	public:
 		self(CCoroutine* P_ThisPtr):m_ThisPtr(P_ThisPtr){}
@@ -238,6 +328,8 @@ public:
 			m_ThisPtr->m_Out(P_Out);
 			Coro::yield();
 		}
+
+		CCoroutine* GetThisPtr(){return m_ThisPtr;}
 
 	private:
 		CCoroutine* m_ThisPtr;
@@ -257,9 +349,22 @@ public:
 	{
 		EnsureValid();
 		m_CoroPtr->yield();
+		if(m_bWaiting)
+			throw CWaitingException();
 		if(!m_Out)
 			throw std::logic_error("No return value received.");
-		return m_Out.GetAndDestroy();
+		return *m_Out;
+	}
+
+	void operator()(std::nothrow_t)
+	{
+		try
+		{
+			(*this)();
+		}
+		catch(CWaitingException&)
+		{//Ignore this because of nothrow
+		}
 	}
 
 	template<class TP_Cb>
@@ -273,7 +378,6 @@ public:
 private:
 	void Start()
 	{
-		//ASSERT(m_In.second);
 		m_Func(self(this));
 	}
 
@@ -291,7 +395,7 @@ class CCoroutine<void, void> : public CCoroutineBase
 {
 public:
 
-	class self
+	class self : public selfBase<self>
 	{
 	public:
 		self(CCoroutine* P_ThisPtr):m_ThisPtr(P_ThisPtr){}
@@ -300,6 +404,8 @@ public:
 		{
 			Coro::yield();
 		}
+
+		CCoroutine* GetThisPtr(){return m_ThisPtr;}
 
 	private:
 		CCoroutine* m_ThisPtr;
@@ -319,6 +425,19 @@ public:
 	{
 		EnsureValid();
 		m_CoroPtr->yield();
+		if(m_bWaiting)
+			throw CWaitingException(); //For consistency.
+	}
+
+	void operator()(std::nothrow_t)
+	{
+		try
+		{
+			(*this)();
+		}
+		catch(CWaitingException&)
+		{//Ignore this because of nothrow
+		}
 	}
 
 	template<class TP_Cb>
@@ -332,7 +451,6 @@ public:
 private:
 	void Start()
 	{
-		//ASSERT(m_In.second);
 		m_Func(self(this));
 	}
 
