@@ -32,6 +32,16 @@ void Call(const wchar_t* cmd, int argc, wchar_t* argv[])
 
 }
 
+void CallDefault(int argc, wchar_t* argv[])
+{
+	if(argc < 1)
+		throwUsage(String::Format(L"No options??? Impossible."));
+	if(argc < 2)
+		throwUsage(String::Format(L"Usage: %s [command] <options...>", argv[0]));
+	Call(argv[1], argc, argv);
+}
+
+
 
 }//CmdLine
 }//JStd
