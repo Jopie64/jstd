@@ -36,7 +36,7 @@ CDirIterator::~CDirIterator(void)
 
 bool CDirIterator::IsDirectory() const
 {
-	return File().attrib & _A_SUBDIR;
+	return !!(File().attrib & _A_SUBDIR);
 }
 
 
