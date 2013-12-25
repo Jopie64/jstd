@@ -20,6 +20,8 @@ public:
 	void	Attach(HANDLE handle);
 	HANDLE	Detach();
 
+	operator const void*() const { return H() ? this : NULL; }
+
 private:
 	HANDLE m_Handle;
 };

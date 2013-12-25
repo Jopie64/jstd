@@ -1,7 +1,8 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Threading.h"
 #include <functional>
 #include <process.h>
+#include <Windows.h>
 
 namespace JStd {
 namespace Threading {
@@ -84,12 +85,10 @@ UINT __stdcall ExecAsync_Entry(LPVOID pVoid)
 
 DWORD ExecAsync_Td(CRunnableBase* pTd)
 {
-//	CWinThread* pWinTd = AfxBeginThread(ExecAsync_Entry, pTd);
-//	if(pWinTd == NULL)
-//		return 0;
-//	return pWinTd->m_nThreadID;
 	unsigned int tdId = 0;
-	CloseHandle((HANDLE)_beginthreadex(NULL, 0, &ExecAsync_Entry, pTd, 0, &tdId));
+	CHandle htd = (HANDLE)_beginthreadex(NULL, 0, &ExecAsync_Entry, pTd, 0, &tdId);
+	if (!htd)
+		return 0;
 	return tdId;
 }
 
@@ -209,32 +208,6 @@ void CMsgThread::SetQuitInfo(int threadExitCode)
 	m_threadExitCode = threadExitCode;
 	m_bQuit = true;
 }
-/*
-
-class a
-{
-public:
-	int b(int c)
-	{
-		ASSERT(c);
-		return c;
-	}
-};
-
-int test2(int i, int j)
-{
-	return i+j;
-}
-
-int test()
-{
-	a h;
-//	return tr1::bind(&a::b,&h,3)();
-	return tr1::bind(&test2, 5, 7)();
-}
-
-int G_i = test();
-*/
 
 
 CWinMlHook::CWinMlHook()

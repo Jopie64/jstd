@@ -147,4 +147,14 @@ private:
 
 };
 
+void Assert(bool ok, const wchar_t* assertion);
+
+#ifndef ASSERT
+#	ifdef _DEBUG
+#		define ASSERT(assertion) Assert((assertion), L#assertion)
+#	else
+#		define ASSERT(assertion)
+#	endif
+#endif
+
 }

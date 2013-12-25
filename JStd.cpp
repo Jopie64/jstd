@@ -109,5 +109,12 @@ void ToUpper(std::string& str)
 
 } //String
 
+void Assert(bool ok, const wchar_t* assertion)
+{
+	if (ok)
+		return;
+	MessageBox(NULL, L"Assertion failed", assertion, MB_ICONHAND);
+}
+
 
 }
