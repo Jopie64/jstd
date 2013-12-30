@@ -117,6 +117,14 @@ PaintDC IWindow::Paint()
 	return move(ret);
 }
 
+DC IWindow::GetDC()
+{
+	DC ret;
+	ret.Attach(H(), ::GetDC(H()));
+	return move(ret);
+}
+
+
 void IWindow::Invalidate(bool erase)
 {
 	RECT rect;
@@ -124,36 +132,39 @@ void IWindow::Invalidate(bool erase)
 	::InvalidateRect(H(), &rect, erase);
 }
 
+WndInit::WndInit()
+:	dwExStyle(0),
+	dwStyle(0),
+	rect(Wnd::DefaultRect()),
+	hWndParent(NULL),
+	hMenu(NULL),
+	hInstance(GetModuleHandle(NULL)),
+	lpParam(NULL)
+{
+}
+
 Rect Wnd::DefaultRect()
 {
 	return Rect(-1, -1, -1, -1);
 }
 
-PWindow Wnd::Create(
-	DWORD dwExStyle,
-	LPCWSTR lpClassName,
-	LPCWSTR lpWindowName,
-	DWORD dwStyle,
-	const Rect& rect,
-	HWND hWndParent,
-	HMENU hMenu,
-	HINSTANCE hInstance,
-	LPVOID lpParam)
+PWindow Wnd::Create(const WndInit& init)
 {
-	bool isDefault = rect.tl.x == -1;
-	Size sz = rect.Size();
-	HWND hWnd = CreateWindowEx(dwExStyle,
-		lpClassName,
-		lpWindowName,
-		dwStyle,
-		isDefault ? CW_USEDEFAULT : rect.tl.x,
-		isDefault ? 0             : rect.tl.y,
+	bool isDefault = init.rect.tl.x == -1;
+	Size sz = init.rect.Size();
+	HWND hWnd = CreateWindowEx(
+		init.dwExStyle,
+		init.ClassName.c_str(),
+		init.WindowName.c_str(),
+		init.dwStyle,
+		isDefault ? CW_USEDEFAULT : init.rect.tl.x,
+		isDefault ? 0             : init.rect.tl.y,
 		isDefault ? CW_USEDEFAULT : sz.x,
 		isDefault ? 0             : sz.y,
-		hWndParent,
-		hMenu,
-		hInstance,
-		lpParam);
+		init.hWndParent,
+		init.hMenu,
+		init.hInstance,
+		init.lpParam);
 	if (!hWnd)
 		throw std::exception("Could not create window");
 	std::shared_ptr<Wnd> ret = make_shared<Wnd>();

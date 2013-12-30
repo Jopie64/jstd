@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 #include "JGraphics.h"
 
 namespace JStd { namespace Wnd {
@@ -142,10 +143,25 @@ public:
 	void ScreenToClient(Point& p);
 	void ClientToScreen(Point& p);
 	PaintDC	Paint();
+	DC	 GetDC();
 	void Invalidate(bool erase = true);
 };
 
 typedef std::shared_ptr<IWindow> PWindow;
+
+struct WndInit
+{
+	WndInit();
+	DWORD	dwExStyle;
+	std::wstring ClassName;
+	std::wstring WindowName;
+	DWORD	dwStyle;
+	Rect	rect;
+	HWND	hWndParent;
+	HMENU	hMenu;
+	HINSTANCE hInstance;
+	LPVOID	lpParam;
+};
 
 class Wnd : public ResourceWrapper<HWND, &DestroyWindow>, public IWindow
 {
@@ -153,16 +169,7 @@ public:
 	virtual HWND H() const override { return ResourceWrapper::H(); }
 	static Rect DefaultRect();
 
-	static PWindow Create(
-		DWORD dwExStyle,
-		LPCWSTR lpClassName,
-		LPCWSTR lpWindowName,
-		DWORD dwStyle,
-		const Rect& rect,
-		HWND hWndParent,
-		HMENU hMenu,
-		HINSTANCE hInstance,
-		LPVOID lpParam);
+	static PWindow Create(const WndInit& init);
 };
 
 class WndSubclass : public IWindow
