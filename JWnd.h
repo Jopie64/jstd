@@ -98,7 +98,7 @@ public:
 	DC() : m_hWnd(NULL) {}
 	DC(DC && that):m_hWnd(NULL) { Swap(that); }
 	virtual ~DC() { Destroy(); }
-	DC& operator=(DC && that) { Swap(that); }
+	DC& operator=(DC && that) { Swap(that); return *this; }
 	void Attach(HWND hWnd, HDC hDC) { ResourceWrapper::Attach(hDC); m_hWnd = hWnd; }
 	virtual void DestroyHandle(HDC handle) override { ReleaseDC(m_hWnd, handle); }
 	void Swap(DC& that) { ResourceWrapper::Swap(that); std::swap(m_hWnd, that.m_hWnd); }
