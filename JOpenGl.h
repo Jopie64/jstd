@@ -1,5 +1,6 @@
 #pragma once
 #include "JWnd.h"
+#include <gl/GL.h>
 
 namespace JStd { namespace GL {
 ;
@@ -11,6 +12,22 @@ struct WndInit : Wnd::WndInit
 
 	BYTE colorBits;
 };
-PWindow CreateGlWindow(WndInit& init);
+
+class GlRenderCtxt : public Wnd::ResourceWrapper<HGLRC, nullptr>
+{
+public:
+	virtual ~GlRenderCtxt();
+	virtual void DestroyHandle(HGLRC handle) override;
+
+};
+
+class GlWnd : public Wnd::IWindow
+{
+public:
+};
+
+typedef std::shared_ptr<GlWnd> PGlWnd;
+
+PGlWnd CreateGlWindow(const WndInit& init);
 
 }}
