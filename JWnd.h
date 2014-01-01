@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <functional>
 #include "JGraphics.h"
 
 namespace JStd { namespace Wnd {
@@ -191,5 +192,9 @@ private:
 	PWindow		m_pWnd;
 	UINT_PTR	m_iIdSubclass;
 };
+
+// If FcRunFrame is set, it is called continuously and PeekMessage() is called every frame.
+// Otherwise, GetMessage() is called (which blocks for every message)
+int RunLoop(HACCEL hAccelTable, const std::function<void()>& FcRunFrame = nullptr);
 
 }} //namespace JStd { namespace Wnd {

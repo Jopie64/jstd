@@ -211,4 +211,40 @@ LRESULT WndSubclass::StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
+
+int RunLoop(HACCEL hAccelTable, const std::function<void()>& FcRunFrame)
+{
+	MSG msg;
+	if (FcRunFrame)
+	{
+		while (true)
+		{
+			if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+			{
+
+				// handle or dispatch messages
+				if (msg.message == WM_QUIT)
+					return msg.wParam;
+				else
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+			}
+			else
+				FcRunFrame();
+		}
+	}
+	
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+	return (int) msg.wParam;
+}
+
 }}
