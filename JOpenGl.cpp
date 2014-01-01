@@ -18,9 +18,15 @@ public:
 		case WM_DESTROY: PostQuitMessage(0); break; //Do this for now...
 
 		case WM_SIZE:
-			glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
-			//glMatrixMode(GL_PROJECTION);
-			//glOrtho(0, LOWORD(lParam), 0, HIWORD(lParam), -1, 1);
+			{
+				int width = LOWORD(lParam);
+				int height = HIWORD(lParam);
+				glViewport(0, 0, width, height);
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				float aspect = (float) width / (float) height;
+				glOrtho(-aspect, aspect, -1, 1, -1, 1);
+			}
 			break;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -105,9 +111,9 @@ public:
 		wglMakeCurrent(m_MainDc.H(), m_RenderCtxt.H());
 
 		//Enable depth test
-//		glDepthMask(GL_TRUE);
-//		glEnable(GL_DEPTH_TEST);
-//		glDepthFunc(GL_LEQUAL);
+		glDepthMask(GL_TRUE);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
 	}
 
 	virtual HWND H() const override { return m_pWnd->H(); }
