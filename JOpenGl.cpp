@@ -16,6 +16,12 @@ public:
 		switch (message)
 		{
 		case WM_DESTROY: PostQuitMessage(0); break; //Do this for now...
+
+		case WM_SIZE:
+			glViewport(0, 0, LOWORD(lParam), HIWORD(lParam));
+			//glMatrixMode(GL_PROJECTION);
+			//glOrtho(0, LOWORD(lParam), 0, HIWORD(lParam), -1, 1);
+			break;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
@@ -99,12 +105,18 @@ public:
 		wglMakeCurrent(m_MainDc.H(), m_RenderCtxt.H());
 
 		//Enable depth test
-		glDepthMask(GL_TRUE);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL);
+//		glDepthMask(GL_TRUE);
+//		glEnable(GL_DEPTH_TEST);
+//		glDepthFunc(GL_LEQUAL);
 	}
 
 	virtual HWND H() const override { return m_pWnd->H(); }
+
+	virtual void SwapBuffers()
+	{
+		::SwapBuffers(m_MainDc.H());
+	}
+
 
 	PWindow			m_pWnd;
 	Wnd::DC			m_MainDc;
@@ -112,10 +124,9 @@ public:
 };
 
 
-PGlWnd CreateOpenGlWindow(const WndInit& init)
+PGlWnd CreateGlWindow(const WndInit& init)
 {
-	shared_ptr<GlWndImpl> pWnd = make_shared<GlWndImpl>(init);
-	return pWnd;
+	return make_shared<GlWndImpl>(init);
 }
 
 

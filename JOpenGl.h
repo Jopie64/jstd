@@ -24,6 +24,7 @@ public:
 class GlWnd : public Wnd::IWindow
 {
 public:
+	virtual void SwapBuffers() =0;
 };
 
 typedef std::shared_ptr<GlWnd> PGlWnd;
