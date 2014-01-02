@@ -4,6 +4,7 @@
 #include <gl/GL.h>
 
 #pragma comment(lib, "Opengl32.lib")
+#pragma comment(lib, "Glu32.lib")
 
 namespace JStd { namespace GL {
 using namespace std;
