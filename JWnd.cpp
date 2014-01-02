@@ -22,38 +22,38 @@ void DCSelect::Unselect()
 }
 
 
-Bitmap DC::CreateCompatibleBitmap(const Size& sz)
+Bitmap DC::CreateCompatibleBitmap(const Size& sz) const
 {
 	Bitmap ret;
 	ret.Attach(::CreateCompatibleBitmap(H(), sz.x, sz.y));
 	return move(ret);
 }
 
-DC DC::CreateCompatibleDC()
+DC DC::CreateCompatibleDC() const
 {
 	DC ret;
 	ret.Attach(m_hWnd, ::CreateCompatibleDC(H()));
 	return move(ret);
 }
 
-DCSelect DC::Select(HGDIOBJ hGdi)
+DCSelect DC::Select(HGDIOBJ hGdi) const
 {
 	DCSelect ret(this);
 	ret.m_OldObj = ::SelectObject(H(),hGdi);
 	return move(ret);
 }
 
-void DC::FillRect(const Rect& rect, const Brush& brush)
+void DC::FillRect(const Rect& rect, const Brush& brush) const
 {
 	::FillRect(H(), &ToRECT(rect), brush.H());
 }
 
-void DC::FillRect(const Rect& rect, COLORREF color)
+void DC::FillRect(const Rect& rect, COLORREF color) const
 {
 	FillRect(rect, CreateSolidBrush(color));
 }
 
-void DC::BitBlt(const Point& destLoc, DC& dcSource, const Point& sourceLoc, const Size& size, DWORD rop)
+void DC::BitBlt(const Point& destLoc, DC& dcSource, const Point& sourceLoc, const Size& size, DWORD rop) const
 {
 	::BitBlt(H(), destLoc.x, destLoc.y, size.x, size.y, dcSource.H(), sourceLoc.x, sourceLoc.y, rop);
 }

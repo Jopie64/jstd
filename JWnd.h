@@ -80,7 +80,7 @@ class DC;
 class DCSelect
 {
 public:
-	DCSelect(DC* pDc) : m_pDc(pDc), m_OldObj(NULL){}
+	DCSelect(const DC* pDc) : m_pDc(pDc), m_OldObj(NULL){}
 	DCSelect(DCSelect && that) : m_pDc(NULL), m_OldObj(NULL) { Swap(that); }
 	DCSelect& operator=(DCSelect && that) { Swap(that); }
 
@@ -89,7 +89,7 @@ public:
 	void Unselect();
 	void Swap(DCSelect& that) { std::swap(m_pDc, that.m_pDc); std::swap(m_OldObj, that.m_OldObj); }
 
-	DC* m_pDc;
+	const DC* m_pDc;
 	HGDIOBJ m_OldObj;
 };
 
@@ -104,18 +104,18 @@ public:
 	virtual void DestroyHandle(HDC handle) override { ReleaseDC(m_hWnd, handle); }
 	void Swap(DC& that) { ResourceWrapper::Swap(that); std::swap(m_hWnd, that.m_hWnd); }
 
-	Bitmap	CreateCompatibleBitmap(const Size& sz);
-	DC		CreateCompatibleDC();
+	Bitmap	CreateCompatibleBitmap(const Size& sz) const;
+	DC		CreateCompatibleDC() const;
 
-	DCSelect Select(HGDIOBJ hGdi);
+	DCSelect Select(HGDIOBJ hGdi) const;
 
 	template<class T>
-	DCSelect Select(GdiResource<T>& res) { return Select(res.HGdi()); }
+	DCSelect Select(GdiResource<T>& res) const { return Select(res.HGdi()); }
 
-	void FillRect(const Rect& rect, const Brush& brush);
-	void FillRect(const Rect& rect, COLORREF color);
+	void FillRect(const Rect& rect, const Brush& brush) const;
+	void FillRect(const Rect& rect, COLORREF color) const;
 
-	void BitBlt(const Point& destLoc, DC& dcSource, const Point& sourceLoc, const Size& size, DWORD rop);
+	void BitBlt(const Point& destLoc, DC& dcSource, const Point& sourceLoc, const Size& size, DWORD rop) const;
 
 	HWND m_hWnd;
 };
