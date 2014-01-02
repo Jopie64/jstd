@@ -123,6 +123,12 @@ public:
 		::SwapBuffers(m_MainDc.H());
 	}
 
+	virtual const Wnd::DC& GetMainDC() override
+	{
+		return m_MainDc;
+	}
+
+
 
 	PWindow			m_pWnd;
 	Wnd::DC			m_MainDc;
