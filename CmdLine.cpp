@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "CmdLine.h"
 #include "JStd.h"
 #include <map>

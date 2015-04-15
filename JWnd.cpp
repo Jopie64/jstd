@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "JWnd.h"
+#include "JStd.h"
 #include <CommCtrl.h>
 #include <exception>
 
@@ -154,8 +154,8 @@ PWindow Wnd::Create(const WndInit& init)
 	Size sz = init.rect.Size();
 	HWND hWnd = CreateWindowEx(
 		init.dwExStyle,
-		init.ClassName.c_str(),
-		init.WindowName.c_str(),
+		JStd::String::ToAW(init.ClassName, CP_ACP).c_str(),
+		JStd::String::ToAW(init.WindowName, CP_ACP).c_str(),
 		init.dwStyle,
 		isDefault ? CW_USEDEFAULT : init.rect.tl.x,
 		isDefault ? 0             : init.rect.tl.y,

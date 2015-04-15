@@ -57,7 +57,14 @@ std::string Format(const char* P_FormatPtr, ...);
 std::wstring Format(const wchar_t* P_FormatPtr, ...);
 
 std::string ToMult(const std::wstring& str, unsigned codePage);
+inline std::string ToMult(const std::string& str, unsigned) { return str; }
 std::wstring ToWide(const std::string& str, unsigned codePage);
+inline std::wstring ToWide(const std::wstring& str, unsigned) { return str; }
+#ifdef _UNICODE
+#define ToAW ToWide
+#else
+#define ToAW ToMult
+#endif
 
 void		TrimRight(std::string& str, const char* charsToTrim);
 void		TrimLeft(std::string& str, const char* charsToTrim);

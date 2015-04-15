@@ -1,8 +1,6 @@
 // BoxingDlg.cpp : implementation file
 //
 
-#include "stdafx.h"
-#include "Resource.h"
 #include "BoxingDlg.h"
 
 

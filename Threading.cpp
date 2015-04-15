@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Threading.h"
 #include <functional>
 #include <process.h>

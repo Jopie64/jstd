@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "JStd.h"
 #include <cstdarg>
 #include <cstdio>
@@ -113,7 +112,7 @@ void Assert(bool ok, const wchar_t* assertion)
 {
 	if (ok)
 		return;
-	MessageBox(NULL, L"Assertion failed", assertion, MB_ICONHAND);
+	MessageBox(NULL, _T("Assertion failed"), String::ToAW(wstring(assertion), CP_ACP).c_str(), MB_ICONHAND);
 }
 
 

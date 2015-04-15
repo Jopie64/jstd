@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "DirIterator.h"
 #include "JStd.h"
 #include <windows.h>

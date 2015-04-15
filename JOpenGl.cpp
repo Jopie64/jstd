@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "JOpenGl.h"
 #include "JStd.h"
 #include <gl/GL.h>
@@ -33,7 +32,7 @@ public:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	const wchar_t* GetClassName() const { return L"OpenGL"; }
+	const TCHAR* GetClassName() const { return _T("OpenGL"); }
 
 	GLWndClass()
 	{
@@ -69,7 +68,7 @@ WndInit::WndInit()
 : colorBits(32)
 {
 	dwStyle |= WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-	ClassName = GLWndClass::I().GetClassName();
+	ClassName = JStd::String::ToWide(GLWndClass::I().GetClassName(), CP_ACP);
 }
 
 class GlWndImpl : public GlWnd

@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "JBoxing.h"
 
 namespace JBoxing

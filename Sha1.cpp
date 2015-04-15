@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Sha1.h"
 #include "JStd.h"
 

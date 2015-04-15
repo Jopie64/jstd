@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "JCoro.h"
 #include <stdexcept>
 
