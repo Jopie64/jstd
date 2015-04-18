@@ -1,5 +1,6 @@
 #include "JCoro.h"
 #include <stdexcept>
+#include <Fibersapi.h>
 
 namespace JStd {
 namespace Coro {
@@ -69,7 +70,7 @@ CCoro* CCoro::Main()
 	return Cur()->m_MainCoroPtr;
 }
 
-class CMainCoroutine : public CCoro, public std::tr1::enable_shared_from_this<CMainCoroutine>
+class CMainCoroutine : public CCoro, public std::enable_shared_from_this<CMainCoroutine>
 {
 friend CCoro;
 public:
@@ -96,7 +97,7 @@ CMainCoro CCoro::Initialize()
 	}
 
 	//There should be no coro yet... Lets create the first one of this thread.
-	std::tr1::shared_ptr<CMainCoroutine> W_ThisPtr(new CMainCoroutine);
+    std::shared_ptr<CMainCoroutine> W_ThisPtr(new CMainCoroutine);
 	if(W_ThisPtr->m_bWasAlreadyFiber)
 	{
 		W_ThisPtr->m_AddressPtr = GetCurrentFiber();

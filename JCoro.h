@@ -1,9 +1,10 @@
 #pragma once
-#include <windows.h>
 #include <memory>
 #include <functional>
 #include <stdexcept>
 #include "JStd.h"
+#include <windows.h>
+
 
 namespace JStd {
 namespace Coro {
@@ -18,10 +19,10 @@ public:
 	CNotInitializedException() : std::logic_error("Coroutine was not initialized. Should call operator() with parameter once before the nothrow version.") {}
 };
 
-class CWaitingException : public std::exception
+class CWaitingException : public std::runtime_error
 {
 public:
-	CWaitingException() : std::exception("Coroutine cannot return any value because it is waiting for an event."){}
+    CWaitingException() : std::runtime_error("Coroutine cannot return any value because it is waiting for an event."){}
 };
 
 class CCoro;
@@ -33,7 +34,7 @@ public:
 	CCoro*	operator->(){return Get();}
 	CCoro&	operator*(){return *Get();}
 private:
-	std::tr1::shared_ptr<CCoro> m_MainCoroPtr;
+    std::shared_ptr<CCoro> m_MainCoroPtr;
 	friend CCoro;
 };
 
@@ -249,13 +250,13 @@ public:
 
 		CCoroutine* GetThisPtr(){return m_ThisPtr;}
 
-		TP_In result(){return *m_thisPtr->m_In;}
+        TP_In result(){return *m_ThisPtr->m_In;}
 
 	private:
 		CCoroutine* m_ThisPtr;
 	};
 
-	typedef std::tr1::function<void (self&, TP_In)> T_Func;
+    typedef std::function<void (self&, TP_In)> T_Func;
 
 	template<class TP_Cb>
 	CCoroutine(const TP_Cb& P_Cb)
@@ -293,7 +294,7 @@ public:
 	{
 		delete m_CoroPtr;
 		m_Func = P_Cb;
-		CCoroutineBase::Init(Create(std::tr1::bind(&CCoroutine::Start, this)));
+        CCoroutineBase::Init(Create(std::bind(&CCoroutine::Start, this)));
 	}
 
 private:
@@ -335,7 +336,7 @@ public:
 		CCoroutine* m_ThisPtr;
 	};
 
-	typedef std::tr1::function<void (self&)> T_Func;
+    typedef std::function<void (self&)> T_Func;
 
 	template<class TP_Cb>
 	CCoroutine(const TP_Cb& P_Cb)
@@ -372,7 +373,7 @@ public:
 	{
 		delete m_CoroPtr;
 		m_Func = P_Cb;
-		CCoroutineBase::Init(Create(std::tr1::bind(&CCoroutine::Start, this)));
+        CCoroutineBase::Init(Create(std::bind(&CCoroutine::Start, this)));
 	}
 
 private:
@@ -398,20 +399,20 @@ public:
 	class self : public selfBase<self>
 	{
 	public:
-		self(CCoroutine* P_ThisPtr):m_ThisPtr(P_ThisPtr){}
+        self(CCoroutine* P_ThisPtr):m_ThisPtr(P_ThisPtr){}
 
 		void yield()
 		{
 			Coro::yield();
 		}
 
-		CCoroutine* GetThisPtr(){return m_ThisPtr;}
+        CCoroutine* GetThisPtr(){return m_ThisPtr;}
 
 	private:
-		CCoroutine* m_ThisPtr;
+        CCoroutine* m_ThisPtr;
 	};
 
-	typedef std::tr1::function<void (self&)> T_Func;
+    typedef std::function<void (self&)> T_Func;
 
 	template<class TP_Cb>
 	CCoroutine(const TP_Cb& P_Cb)
@@ -445,13 +446,14 @@ public:
 	{
 		delete m_CoroPtr;
 		m_Func = P_Cb;
-		CCoroutineBase::Init(Create(std::tr1::bind(&CCoroutine::Start, this)));
+        CCoroutineBase::Init(Create(std::bind(&CCoroutine::Start, this)));
 	}
 
 private:
 	void Start()
 	{
-		m_Func(self(this));
+        self s(this);
+        m_Func(s);
 	}
 
 	T_Func	m_Func;

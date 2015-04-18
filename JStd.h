@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 
+namespace std { namespace tr1{} using namespace tr1; }
+
 namespace JStd
 {
 
@@ -10,8 +12,8 @@ template <class TP_Obj>
 class CJRefCountObjTempl
 {
 public:
-	typedef std::tr1::shared_ptr<TP_Obj> TRefPtr;
-	typedef std::tr1::weak_ptr<TP_Obj> TWeakPtr;
+    typedef std::shared_ptr<TP_Obj> TRefPtr;
+    typedef std::weak_ptr<TP_Obj> TWeakPtr;
 
 };
 
@@ -33,17 +35,17 @@ public:
 	template<class TP_1,class TP_2, class TP_3, class TP_4, class TP_5, class TP_6>
 	CJRefCountDerivedTempl(TP_1& P_1, TP_2& P_2, TP_3& P_3, TP_4& P_4, TP_5& P_5, TP_6& P_6):TP_Obj_Base(P_1,P_2,P_3,P_4,P_5,P_6){}
 
-	typedef std::tr1::shared_ptr<TP_Obj> TRefPtr;
-	typedef std::tr1::weak_ptr<TP_Obj> TWeakPtr;
+    typedef std::shared_ptr<TP_Obj> TRefPtr;
+    typedef std::weak_ptr<TP_Obj> TWeakPtr;
 };
 
 class CSharedNewHelper
 {
 public:
 	template<class TP_Obj>
-	std::tr1::shared_ptr<TP_Obj> operator<<(TP_Obj* P_ObjPtr)
+    std::shared_ptr<TP_Obj> operator<<(TP_Obj* P_ObjPtr)
 	{
-		return std::tr1::shared_ptr<TP_Obj>(P_ObjPtr);
+        return std::shared_ptr<TP_Obj>(P_ObjPtr);
 	}
 };
 
@@ -127,9 +129,9 @@ public:
 	template<class TP_1>
 	TP_Val& operator()(const TP_1& P_1){Destroy(); new (m_Data) TP_Val(P_1); m_bConstructed = true; return Get(); }
 	template<class TP_1, class TP_2>
-	TP_Val& operator()(const TP_1& P_1){Destroy(); new (m_Data) TP_Val(P_1, P_2); m_bConstructed = true; return Get(); }
+    TP_Val& operator()(const TP_1& P_1, const TP_2& P_2){Destroy(); new (m_Data) TP_Val(P_1, P_2); m_bConstructed = true; return Get(); }
 	template<class TP_1, class TP_2, class TP_3>
-	TP_Val& operator()(const TP_1& P_1){Destroy(); new (m_Data) TP_Val(P_1, P_2, P_3); m_bConstructed = true; return Get(); }
+    TP_Val& operator()(const TP_1& P_1, const TP_2& P_2, const TP_3& P_3){Destroy(); new (m_Data) TP_Val(P_1, P_2, P_3); m_bConstructed = true; return Get(); }
 
 	//Validators
 	bool IsValid() const {return m_bConstructed;}

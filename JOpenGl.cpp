@@ -103,9 +103,9 @@ public:
 
 		GLuint PixelFormat;
 		if (!(PixelFormat = ChoosePixelFormat(m_MainDc.H(), &pfd)))	// Did Windows Find A Matching Pixel Format?
-			throw std::exception("Can't Find A Suitable PixelFormat.");
+            throw runtime_error("Can't Find A Suitable PixelFormat.");
 		if (!SetPixelFormat(m_MainDc.H(), PixelFormat, &pfd))		// Are We Able To Set The Pixel Format?
-			throw std::exception("Can't Set The PixelFormat.");
+            throw runtime_error("Can't Set The PixelFormat.");
 
 		m_RenderCtxt.Attach(wglCreateContext(m_MainDc.H()));
 		wglMakeCurrent(m_MainDc.H(), m_RenderCtxt.H());

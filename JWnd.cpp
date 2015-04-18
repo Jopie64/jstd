@@ -45,7 +45,8 @@ DCSelect DC::Select(HGDIOBJ hGdi) const
 
 void DC::FillRect(const Rect& rect, const Brush& brush) const
 {
-	::FillRect(H(), &ToRECT(rect), brush.H());
+    RECT r(ToRECT(rect));
+    ::FillRect(H(), &r, brush.H());
 }
 
 void DC::FillRect(const Rect& rect, COLORREF color) const
@@ -166,8 +167,8 @@ PWindow Wnd::Create(const WndInit& init)
 		init.hInstance,
 		init.lpParam);
 	if (!hWnd)
-		throw std::exception("Could not create window");
-	std::shared_ptr<Wnd> ret = make_shared<Wnd>();
+        throw std::exception(runtime_error("Could not create window"));
+    shared_ptr<Wnd> ret = make_shared<Wnd>();
 	ret->Attach(hWnd);
 	return ret;
 }
@@ -199,7 +200,7 @@ void WndSubclass::Attach(PWindow pWnd)
 	if (!SetWindowSubclass(H(), &StaticWndProc, m_iIdSubclass, (DWORD_PTR)this))
 	{
 		m_pWnd = nullptr;
-		throw std::exception("SetWindowSubclass()");
+        throw runtime_error("SetWindowSubclass()");
 	}
 }
 

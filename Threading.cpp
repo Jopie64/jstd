@@ -198,8 +198,7 @@ bool CMsgThread::CallMessages()
 
 void CMsgThread::PostQuitMessage(int exitCode)
 {
-//	PostCallback(std::bind1st(std::bind1st(std::mem_fun_ref(&CMsgThread::SetQuitInfo),this),exitCode));
-	PostCallback(tr1::bind(&CMsgThread::SetQuitInfo, this, exitCode));
+    PostCallback(bind(&CMsgThread::SetQuitInfo, this, exitCode));
 }
 
 void CMsgThread::SetQuitInfo(int threadExitCode)

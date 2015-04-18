@@ -58,10 +58,10 @@ class GdiResource : public ResourceWrapper<T, &DeleteObjectWrapper<T> >
 {
 public:
 	GdiResource(){}
-	GdiResource(GdiResource && that) { Swap(that); }
+    GdiResource(GdiResource && that) { this->Swap(that); }
 	GdiResource& operator=(GdiResource && that) { Swap(that); return *this; }
 
-	HGDIOBJ HGdi() const { return H(); }
+    HGDIOBJ HGdi() const { return this->H(); }
 };
 
 class Bitmap : public GdiResource<HBITMAP>

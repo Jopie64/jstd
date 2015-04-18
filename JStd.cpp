@@ -101,7 +101,7 @@ void Remove(std::string& str, char charRem)
 
 void ToUpper(std::string& str)
 {
-	transform(str.begin(), str.end(), str.begin(), toupper);
+    transform(str.begin(), str.end(), str.begin(), [](char c) -> char { return toupper(c); });
 }
 
 

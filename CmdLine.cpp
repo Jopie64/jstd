@@ -1,5 +1,5 @@
-#include "CmdLine.h"
 #include "JStd.h"
+#include "CmdLine.h"
 #include <map>
 
 namespace JStd
@@ -116,7 +116,7 @@ bool Register(const wchar_t* cmd, const FuncCmd& cmdFunc)
 void Call(const wchar_t* cmd, CmdLine& cmdLine)
 {
 	if (FuncCmd& func = Registrar::I().m_mapCmd[cmd])
-		func(std::tr1::ref(cmdLine));
+        func(std::ref(cmdLine));
 	else
 		throw std::runtime_error(String::Format("Command '%s' not understood.", String::ToMult(cmd, 0).c_str()));
 

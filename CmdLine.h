@@ -2,6 +2,9 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <iostream>
+
+namespace std { namespace tr1{} using namespace tr1; }
 
 namespace JStd
 {
@@ -38,7 +41,7 @@ private:
 };
 
 //typedef std::tr1::function<void(int argc, wchar_t* argv[])> FuncCmd;
-typedef std::tr1::function<void(CmdLine&)>					FuncCmd;
+typedef std::function<void(CmdLine&)>					FuncCmd;
 
 //Returns bool so you can do something like
 //static bool registered = CmdLine::Register("command", &onCommand);
@@ -59,13 +62,14 @@ inline void throwUsage(const std::wstring& usage){ throw CUsageException(usage);
 template<class T_Stream>
 void CallDefaultWithCatch(T_Stream& str, int argc, wchar_t* argv[])
 {
+    using namespace std;
 	try
 	{
 		CallDefault(argc, argv);
 	}
 	catch(CUsageException& e)
 	{
-		str << L"Usage: " << e.m_usage.c_str() << endl;
+        str << L"Usage: " << e.m_usage.c_str() << endl;
 	}
 	catch(std::exception& e)
 	{
