@@ -58,6 +58,7 @@ public:
 	~CScopeLock(){m_CritSect.Unlock();}
 
 private:
+	CScopeLock& operator=(const CScopeLock&);
 	CCritSect& m_CritSect;
 };
 

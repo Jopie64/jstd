@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include "JGraphics.h"
+#include <Windows.h>
 
 namespace JStd { namespace Wnd {
 

@@ -164,4 +164,12 @@ void Assert(bool ok, const wchar_t* assertion);
 #	endif
 #endif
 
-}
+}//namespace JStd
+
+#ifndef _T
+#ifdef _UNICODE
+#define _T(P) L ## P
+#else
+#define _T(P) P
+#endif
+#endif
