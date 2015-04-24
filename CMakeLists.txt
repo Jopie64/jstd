@@ -41,7 +41,7 @@ set(JSTD_SOURCES_CPP
 	"Threading.cpp"
 	"JWnd.cpp"
 	"JGraphics.cpp"
-	"JOpenGL.cpp"
+	"JOpenGl.cpp"
 	)
 set(JSTD_SOURCES_H
 	"CmdLine.h"
@@ -52,7 +52,7 @@ set(JSTD_SOURCES_H
 	"Threading.h"
 	"JWnd.h"
 	"JGraphics.h"
-	"JOpenGL.h"
+	"JOpenGl.h"
 	)
 
 source_group("include" FILES ${JSTD_SOURCES_H})
