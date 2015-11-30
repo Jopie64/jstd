@@ -1,10 +1,44 @@
 #include "JStd.h"
 #include <cstdarg>
 #include <cstdio>
+#ifdef WIN32
 #include <windows.h>
+#else
+#include <cstring>
+#include <cstdarg>
+#include <cwchar>
+#endif
 #include <algorithm>
 
 using namespace std;
+
+#ifdef _MSC_VER
+#define jvsnprintf _vsnprintf_s
+#define jvsnwprintf _vsnwprintf_s
+#define jvscprintf _vscprintf
+#define jvscwprintf _vscwprintf
+#else
+#define jvsnprintf vsnprintf
+#define jvsnwprintf vswprintf
+int jvscprintf (const char * format, va_list pargs)
+{
+    int retval;
+    va_list argcopy;
+    va_copy(argcopy, pargs);
+    retval = vsnprintf(NULL, 0, format, argcopy);
+    va_end(argcopy);
+    return retval;
+}
+int jvscwprintf (const wchar_t * format, va_list pargs)
+{
+    int retval;
+    va_list argcopy;
+    va_copy(argcopy, pargs);
+    retval = vswprintf(NULL, 0, format, argcopy);
+    va_end(argcopy);
+    return retval;
+}
+#endif
 
 namespace JStd
 {
@@ -16,25 +50,33 @@ std::string Format(const char* P_FormatPtr, ...)
 {
 	va_list W_va;
 	va_start(W_va,P_FormatPtr);
-	size_t W_iSize = _vscprintf(P_FormatPtr,W_va);
+    size_t W_iSize = jvscprintf(P_FormatPtr,W_va);
 	std::string W_sReturn;
 	W_sReturn.resize(W_iSize);
-	_vsnprintf_s(&*W_sReturn.begin(), W_iSize+1, W_iSize, P_FormatPtr, W_va);
-	return W_sReturn;
+#ifdef _MSC_VER
+    jvsnprintf(&*W_sReturn.begin(), W_iSize+1, W_iSize, P_FormatPtr, W_va);
+#else
+    jvsnprintf(&*W_sReturn.begin(), W_iSize+1, P_FormatPtr, W_va);
+#endif
+    return W_sReturn;
 }
 
 std::wstring Format(const wchar_t* P_FormatPtr, ...)
 {
 	va_list W_va;
 	va_start(W_va,P_FormatPtr);
-	size_t W_iSize = _vscwprintf(P_FormatPtr,W_va);
+    size_t W_iSize = jvscwprintf(P_FormatPtr,W_va);
 	std::wstring W_sReturn;
-	W_sReturn.resize(W_iSize);
-	_vsnwprintf_s(&*W_sReturn.begin(),W_iSize+1,W_iSize,P_FormatPtr,W_va);
+    W_sReturn.resize(W_iSize);
+#ifdef _MSC_VER
+    jvsnwprintf(&*W_sReturn.begin(),W_iSize+1,W_iSize,P_FormatPtr,W_va);
+#else
+    jvsnwprintf(&*W_sReturn.begin(),W_iSize+1,P_FormatPtr,W_va);
+#endif
 	return W_sReturn;
 }
 
-
+#ifdef WIN32
 
 std::string ToMult(const std::wstring& str, unsigned codePage)
 {
@@ -59,6 +101,7 @@ std::wstring ToWide(const std::string& str, unsigned codePage)
    }
    return wideStr;
 }
+#endif
 
 void TrimRight(std::string& str, const char* charsToTrim)
 {
@@ -108,12 +151,15 @@ void ToUpper(std::string& str)
 
 } //String
 
+#ifdef WIN32
+
 void Assert(bool ok, const wchar_t* assertion)
 {
 	if (ok)
 		return;
 	MessageBox(NULL, _T("Assertion failed"), String::ToAW(wstring(assertion), CP_ACP).c_str(), MB_ICONHAND);
 }
+#endif
 
 
 }
